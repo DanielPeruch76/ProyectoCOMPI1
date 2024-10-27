@@ -1,0 +1,73 @@
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+</head>
+
+<div style="padding-top: 3%">
+  <div class="bg-dark p-4 rounded m-5 letra-clase">
+    <div style="padding-left: 2%; padding-right: 2%">
+      <h4 style="color: white; margin-bottom: 1.5%; margin-top: 0.5%">
+        Archivo de Entrada
+      </h4>
+      <textarea
+        class="form-control"
+        id="entradatxtarea"
+        rows="15"
+        [(ngModel)]="entrada"
+        name="entrada"
+      ></textarea>
+    </div>
+
+    <div style="padding-top: 1.5%; padding-left: 2%">
+      <input
+        #fileUpload
+        [hidden]="true"
+        type="file"
+        class="file-input"
+        (change)="onFileSelected($event)"
+      />
+      <button
+        class="btn btn-outline-success"
+        (click)="fileUpload.click()"
+        style="margin-right: 25px; color: aqua"
+      >
+        Cargar Archivo
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        (click)="ejecutar()"
+        style="margin-right: 25px; color: #f2da07"
+      >
+        Ejecutar
+      </button>
+    </div>
+  </div>
+
+  <div class="bg-dark p-4 rounded m-5 letra-clase">
+    <div style="padding-left: 2%; padding-right: 2%; padding-bottom: 1%">
+      <h4 style="color: white; margin-bottom: 1%">Consola</h4>
+      <textarea
+        style="color: rgb(0, 126, 128); background: black"
+        readonly
+        class="form-control"
+        id="salidatxtarea"
+        rows="15"
+        [(ngModel)]="salida"
+        name="salida"
+      ></textarea>
+    </div>
+  </div>
+</div>
+
+<style>
+  .letra-clase {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-style: italic;
+    color: #00e3f3;
+  }
+</style>

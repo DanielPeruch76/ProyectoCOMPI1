@@ -1,0 +1,75 @@
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Knewave&display=swap"
+    rel="stylesheet"
+  />
+</head>
+
+<nav class="navbar navbar-dark bg-dark fixed-top">
+  <div class="container-fluid">
+    <div class="float-left">
+      <a class="navbar-brand letra-clase" href="/inicio">Proyecto 2 OLC1</a>
+    </div>
+    <div class="float-right">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasDarkNavbar"
+        aria-controls="offcanvasDarkNavbar"
+        style="margin-left: 20px"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div
+        class="offcanvas offcanvas-end text-bg-dark"
+        tabindex="-1"
+        id="offcanvasDarkNavbar"
+        aria-labelledby="offcanvasDarkNavbarLabel"
+      >
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title letra-clase" id="offcanvasDarkNavbarLabel">
+            Mostrar
+          </h5>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                aria-current="page"
+                onclick=" window.open('https://gitlab.com/danper76/olc1_proyecto2_202100639.git','_blank')"
+                >Repositorio Proyecto 2</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .navbar {
+    font-family: "Knewave", system-ui;
+    font-weight: 900;
+    font-style: normal;
+    color: #eff304;
+  }
+  .letra-clase {
+    font-family: "Knewave", system-ui;
+    font-weight: 900;
+    font-style: normal;
+    color: #00e3f3;
+  }
+</style>
+
+<router-outlet></router-outlet>

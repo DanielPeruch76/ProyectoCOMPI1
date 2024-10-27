@@ -1,0 +1,13 @@
+html {
+    background: #ebc402; 
+background: -webkit-linear-gradient(to right, #03a8df, #0eadd0);  
+background: linear-gradient(to right, #243B55, #141E30); 
+
+}
+
+body {
+    background: #212122; 
+    background: -webkit-linear-gradient(to right, #243B55, #141E30);  
+    background: linear-gradient(to right, #016cee, #017df1); 
+    
+}

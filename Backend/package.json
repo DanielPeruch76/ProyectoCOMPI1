@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --outDir dist",
+    "compile": "ts-jison -t typescript -n Proyecto -n Proyecto -o src/analizador/gramatica-generada.ts src/analizador/gramatica.jison",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"tsc --watch --outDir dist\" \"nodemon -q dist/index.js\""
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@ts-jison/parser-generator": "^0.4.1-alpha.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "concurrently": "^9.0.1",
+    "nodemon": "^3.1.7",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.1"
+  }
+}
