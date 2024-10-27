@@ -238,10 +238,9 @@ PARAMS : PARAMS COMA PARAM    {$1.push($3); $$ = $1;}
        | PARAM                {$$ = [$1];}
 ;
 
-PARAM : TIPOS ID IGUAL EXPRESION    {$$ = {tipo:$1, id:$2, valor:$4};}
-      | TIPOS ID                    {$$ = {tipo:$1, id:$2, valor:null};}
+PARAM : ID DOSPUNTOS TIPOS IGUAL EXPRESION    {$$ = {tipo:$3, id:$1, valor:$5};}
+      | ID DOSPUNTOS TIPOS                   {$$ = {tipo:$3, id:$1, valor:null};}
 ;
-
 
 EJECUTAR : RUN ID PAR1 PARAMSCALL PAR2    {$$ = new Run.default($2, $4, @1.first_line, @1.first_column);}
          | RUN ID PAR1 PAR2               {$$ = new Run.default($2, [], @1.first_line, @1.first_column);}
