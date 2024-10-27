@@ -31,6 +31,13 @@
   const DeclaracionVector = require('./instrucciones/DeclaracionVector')
   const Funcion = require('./instrucciones/Funcion')
   const Return = require('./instrucciones/Return')
+  const DeclaracionMatriz = require('./instrucciones/DeclaracionMatriz')
+  const DeclaracionMatrizDefecto = require('./instrucciones/DeclaracionMatrizDefecto')
+  const DeclararArregloDefecto = require('./instrucciones/DeclararArregloDefecto')
+  const AsignacionVector = require('./instrucciones/AsignacionVector')
+  const AsignacionMatriz = require('./instrucciones/AsignacionMatriz')
+  const AccesoVector = require('./instrucciones/AccesoVector')
+  const AccesoMatriz = require('./instrucciones/AccesoMatriz')
 %}
 
 
@@ -39,7 +46,8 @@
 %options case-insensitive
 
 %%
-
+[/][/][^\n]*               {};
+[/][*]([^*]|\*[^/])*[*][/] {};
 "int"                   return 'INT'
 "double"                return 'DOUBLE'
 "string"                return 'STRING'
@@ -99,8 +107,7 @@
 [a-z][a-z0-9_]*         return 'ID'
 [\ \r\t\f]              {};
 [\ \n]                  {};
-[/][/][^\n]*               {};
-[/][*]([^*]|\*[^/])*[*][/] {};
+
 
 <<EOF>>                 return 'EOF'
 
@@ -167,6 +174,20 @@ DECREMENTO : ID MENOS MENOS  {$$ = new Decremento.default($1, @1.first_line, @1.
 DECLARACION : MUTABILIDAD LISTAID DOSPUNTOS TIPOS IGUAL EXPRESION  {$$ = new Declaracion.default($4, @1.first_line, @1.first_column, $2[0], $6,$1);}
             | MUTABILIDAD LISTAID DOSPUNTOS TIPOS IGUAL CAST PAR1 EXPRESION AS TIPOS PAR2  {$$ = new Casteo.default($4, $10,@1.first_line, @1.first_column, $2[0], $8,$1);}
             | MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 IGUAL NEW VECTOR TIPOS COR1 EXPRESION COR2  {$$ = new DeclaracionVector.default($4,@1.first_line, @1.first_column,$1,$2[0], $10,$12);}
+            | MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 COR1 COR2 IGUAL NEW VECTOR TIPOS COR1 EXPRESION COR2 COR1 EXPRESION COR2 {$$ = new DeclaracionMatriz.default($4,@1.first_line, @1.first_column,$1,$2[0], $12,$14,$17);}
+            |MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 COR1 COR2 IGUAL COR1 LISTAMATRIZ COR2 { $$ = new DeclaracionMatrizDefecto.default($4,@1.first_line, @1.first_column,$1,$2[0],$11); }
+            |MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 IGUAL LISTAVECTOR { $$ = new DeclararArregloDefecto.default($4,@1.first_line, @1.first_column,$1,$2[0],$8); }
+;
+
+LISTAMATRIZ: LISTAMATRIZ COMA LISTAVECTOR {$1.push($3); $$ = $1;}
+            |LISTAVECTOR {$$ = [$1];}
+;
+
+LISTAVECTOR: COR1 VALORESMATRIZ COR2 {$$ = $2;}
+;
+
+VALORESMATRIZ: VALORESMATRIZ COMA EXPRESION {$1.push($3); $$ = $1;}
+                | EXPRESION {$$ = [$1];}
 ;
 
 MULTIPLEDECLARACION:  MUTABILIDAD LISTAID DOSPUNTOS TIPOS {$$ = new DeclaracionDefecto.default($4, @1.first_line, @1.first_column, $2,$1);}
@@ -178,6 +199,8 @@ LISTAID : LISTAID COMA ID {$1.push($3); $$ = $1;}
 
 ASIGNACION : ID IGUAL EXPRESION   {$$ = new AsignacionVar.default($1, $3, @1.first_line, @1.first_column );}
            | ID IGUAL CAST PAR1 EXPRESION AS TIPOS PAR2   {$$ = new CasteoAsignacion.default($1, $7,$5, @1.first_line, @1.first_column );}
+           | ID COR1 EXPRESION COR2 IGUAL EXPRESION {$$ = new AsignacionVector.default($1, $3,$6, @1.first_line, @1.first_column );}
+           | ID COR1 EXPRESION COR2 COR1 EXPRESION COR2 IGUAL EXPRESION {$$ = new AsignacionMatriz.default($1, $3,$6, $9, @1.first_line, @1.first_column );}
       
 ;
 
@@ -277,6 +300,8 @@ EXPRESION : MENOS EXPRESION %prec UMENOS {$$ = new Aritmeticas.default(Aritmetic
           | FALSE                     {$$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), false,@1.first_line, @1.first_column);}
           | CHAR                      {$$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.CHAR), $1,@1.first_line, @1.first_column);}
           | LLAMADA {$$=$1}
+          | ID COR1 EXPRESION COR2    {$$ = new AccesoVector.default($1, $3,@1.first_line, @1.first_column);}
+          | ID COR1 EXPRESION COR2 COR1 EXPRESION COR2    {$$ = new AccesoMatriz.default($1, $3, $6, @1.first_line, @1.first_column);}
 ;
 
 RELACIONALES: EXPRESION MENOR EXPRESION {$$ = new Relacionales.default(Relacionales.Relacional.MENOR, $1, $3, @1.first_line, @1.first_column );}

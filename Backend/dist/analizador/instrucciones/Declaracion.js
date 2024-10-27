@@ -29,6 +29,9 @@ class Declaracion extends Instruccion_1.Instruccion {
         if (resValor instanceof Aritmeticas_1.default) {
             resValor = resValor.interpretar(arbol, tabla);
         }
+        if (resValor === null) {
+            return new Errores_1.default('SEMANTICO', 'El valor a asignar es nulo', this.linea, this.col);
+        }
         console.log("El valor a asignar despues de interpretar es este. ");
         console.log(resValor);
         console.log(resValor.tipoDato);

@@ -29,6 +29,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Operadores = void 0;
 const Instruccion_1 = require("../abstracto/Instruccion");
 const Errores_1 = __importDefault(require("../excepciones/Errores"));
+const AccesoMatriz_1 = __importDefault(require("../instrucciones/AccesoMatriz"));
+const AccesoVector_1 = __importDefault(require("../instrucciones/AccesoVector"));
 const Llamada_1 = __importDefault(require("../instrucciones/Llamada"));
 const Tipo_1 = __importStar(require("../simbolo/Tipo"));
 const Nativo_1 = __importDefault(require("./Nativo"));
@@ -47,6 +49,16 @@ class Aritmeticas extends Instruccion_1.Instruccion {
         if (opIzq instanceof Llamada_1.default) {
             opIzq = opIzq.interpretar(arbol, tabla);
             console.log("___________________El valor que tiene la llamada es_______________________ ");
+            console.log(opIzq);
+        }
+        if (opIzq instanceof AccesoMatriz_1.default) {
+            opIzq = opIzq.interpretar(arbol, tabla);
+            console.log("Es un acceso Matriz convirtio el opizq en:");
+            console.log(opIzq);
+        }
+        if (opIzq instanceof AccesoVector_1.default) {
+            opIzq = opIzq.interpretar(arbol, tabla);
+            console.log("Es un acceso Matriz convirtio el opizq en:");
             console.log(opIzq);
         }
         if (opIzq instanceof Nativo_1.default) {
@@ -71,10 +83,20 @@ class Aritmeticas extends Instruccion_1.Instruccion {
             console.log("___________________________El valor que tiene la llamada es___________________");
             console.log(opDer);
         }
-        if (opIzq instanceof Nativo_1.default) {
-            opIzq = opIzq.interpretar(arbol, tabla);
+        if (opDer instanceof AccesoMatriz_1.default) {
+            opDer = opDer.interpretar(arbol, tabla);
+            console.log("Es un acceso Matriz convirtio el opder en:");
+            console.log(opDer);
+        }
+        if (opDer instanceof AccesoVector_1.default) {
+            opDer = opDer.interpretar(arbol, tabla);
+            console.log("Es un acceso Matriz convirtio el opizq en:");
+            console.log(opDer);
+        }
+        if (opDer instanceof Nativo_1.default) {
+            opDer = opDer.interpretar(arbol, tabla);
             console.log("Se convirtio el opizq en:");
-            console.log(opIzq);
+            console.log(opDer);
         }
         if (opDer instanceof Aritmeticas) {
             opDer = opDer.interpretar(arbol, tabla);

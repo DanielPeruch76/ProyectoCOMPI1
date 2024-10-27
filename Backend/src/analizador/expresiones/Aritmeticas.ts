@@ -1,5 +1,7 @@
 import { Instruccion } from "../abstracto/Instruccion";
 import Errores from "../excepciones/Errores";
+import AccesoMatriz from "../instrucciones/AccesoMatriz";
+import AccesoVector from "../instrucciones/AccesoVector";
 import Llamada from "../instrucciones/Llamada";
 import Arbol from "../simbolo/Arbol";
 import tablaSimbolo from "../simbolo/tablaSimbolo";
@@ -29,6 +31,16 @@ export default class Aritmeticas extends Instruccion {
             console.log("___________________El valor que tiene la llamada es_______________________ ")
             console.log(opIzq)
         }
+        if(opIzq instanceof AccesoMatriz){
+            opIzq=opIzq.interpretar(arbol,tabla)
+            console.log("Es un acceso Matriz convirtio el opizq en:")
+            console.log(opIzq)
+        }
+        if(opIzq instanceof AccesoVector){
+            opIzq=opIzq.interpretar(arbol,tabla)
+            console.log("Es un acceso Matriz convirtio el opizq en:")
+            console.log(opIzq)
+        }
         if(opIzq instanceof Nativo){
             opIzq=opIzq.interpretar(arbol,tabla)
             console.log("Se convirtio el opizq en:")
@@ -49,10 +61,20 @@ export default class Aritmeticas extends Instruccion {
             console.log("___________________________El valor que tiene la llamada es___________________")
             console.log(opDer)
         }
-        if(opIzq instanceof Nativo){
-            opIzq=opIzq.interpretar(arbol,tabla)
+        if(opDer instanceof AccesoMatriz){
+            opDer=opDer.interpretar(arbol,tabla)
+            console.log("Es un acceso Matriz convirtio el opder en:")
+            console.log(opDer)
+        }
+        if(opDer instanceof AccesoVector){
+            opDer=opDer.interpretar(arbol,tabla)
+            console.log("Es un acceso Matriz convirtio el opizq en:")
+            console.log(opDer)
+        }
+        if(opDer instanceof Nativo){
+            opDer=opDer.interpretar(arbol,tabla)
             console.log("Se convirtio el opizq en:")
-            console.log(opIzq)
+            console.log(opDer)
         }
         if(opDer instanceof Aritmeticas){
             opDer=opDer.interpretar(arbol,tabla)

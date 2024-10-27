@@ -4,6 +4,7 @@ import tablaSimbolo from '../simbolo/tablaSimbolo'
 import Tipo, { tipoDato } from '../simbolo/Tipo'
 import Errores from '../excepciones/Errores'
 import Llamada from "./Llamada";
+import Nativo from "../expresiones/Nativo";
 
 
 
@@ -28,6 +29,10 @@ export default class Print extends Instruccion {
         let valor = this.expresion.interpretar(arbol, tabla)
         console.log("-----------El valor que se obtuvo al interpretar en IMPRIMIR--------------------------------")
         console.log(valor)
+        //esto podria dar un error, cualquier cosa borrar esto
+        if(valor instanceof Nativo){
+            valor=valor.interpretar(arbol,tabla)
+        }
         if (valor instanceof Errores) return valor
         arbol.Print(valor)
     }

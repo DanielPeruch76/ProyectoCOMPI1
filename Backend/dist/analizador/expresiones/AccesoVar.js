@@ -40,6 +40,8 @@ class AccesoVar extends Instruccion_1.Instruccion {
             return new Errores_1.default('SEMANTICO', 'Acceso a variable no existente', this.linea, this.col);
         }
         this.tipoDato = valor.getTipo();
+        console.log("este es el valor a devolver despues de acceder a una variable");
+        console.log(valor.getValor());
         return valor.getValor();
     }
 }

@@ -30,21 +30,22 @@ const Instruccion_1 = require("../abstracto/Instruccion");
 const Errores_1 = __importDefault(require("../excepciones/Errores"));
 const Tipo_1 = __importStar(require("../simbolo/Tipo"));
 const Llamada_1 = __importDefault(require("./Llamada"));
-class AsignacionVector extends Instruccion_1.Instruccion {
-    constructor(id, posicion, exp, linea, col) {
+class AsignacionMatriz extends Instruccion_1.Instruccion {
+    constructor(id, fila, columna, exp, linea, col) {
         super(new Tipo_1.default(Tipo_1.tipoDato.VOID), linea, col);
         this.id = id;
-        this.posicion = posicion;
+        this.fila = fila;
+        this.columna = columna;
         this.exp = exp;
     }
     interpretar(arbol, tabla) {
         let variable = tabla.getVariable(this.id.toLowerCase());
-        console.log("----------------Esta es una asignacion al vector--------------");
-        console.log(variable);
         if (variable == null) {
             return new Errores_1.default('SEMANTICO', 'La variable no existe', this.linea, this.col);
         }
         console.log("--------------------nuevo valor a asignar :3--------------------------");
+        console.log("Este es el valor de la expresion a asignar");
+        console.log(this.exp);
         let newValor = this.exp.interpretar(arbol, tabla);
         if (this.exp instanceof Llamada_1.default) {
             newValor = newValor.interpretar(arbol, tabla);
@@ -60,17 +61,26 @@ class AsignacionVector extends Instruccion_1.Instruccion {
             return new Errores_1.default("Error Semántico", "No Se Puede Modificar Una Variable Const", this.linea, this.col);
         }
         this.tipoDato = variable.getTipo();
-        let posicion = this.posicion.interpretar(arbol, tabla);
-        if (posicion instanceof Errores_1.default)
-            return posicion;
-        if (this.posicion.tipoDato.getTipo() != Tipo_1.tipoDato.ENTERO) {
+        console.log("Este es el valor de la fila");
+        console.log(this.fila);
+        let fila = this.fila.interpretar(arbol, tabla);
+        if (fila instanceof Errores_1.default)
+            return fila;
+        if (this.fila.tipoDato.getTipo() != Tipo_1.tipoDato.ENTERO) {
             return new Errores_1.default('SEMANTICO', 'Indice del vector no válido', this.linea, this.col);
         }
-        console.log("Este es el valor del vector en la posicion antes");
-        console.log(variable.getValor()[parseInt(posicion)]);
-        variable.getValor()[parseInt(posicion)] = newValor;
-        console.log("Este es el valor del vector en la posicion despues");
-        console.log(variable.getValor()[parseInt(posicion)]);
+        console.log("Este es el valor de la columna");
+        console.log(this.columna);
+        let columna = this.columna.interpretar(arbol, tabla);
+        if (columna instanceof Errores_1.default)
+            return columna;
+        if (this.columna.tipoDato.getTipo() != Tipo_1.tipoDato.ENTERO) {
+            return new Errores_1.default('SEMANTICO', 'Indice del vector no válido', this.linea, this.col);
+        }
+        console.log(fila);
+        console.log(columna);
+        variable.getValor()[parseInt(fila)][parseInt(columna)] = newValor;
+        console.log(variable.getValor());
     }
 }
-exports.default = AsignacionVector;
+exports.default = AsignacionMatriz;

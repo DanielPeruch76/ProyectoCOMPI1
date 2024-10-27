@@ -38,7 +38,11 @@ export default class Declaracion extends Instruccion {
         if(resValor instanceof Aritmeticas){
             resValor=resValor.interpretar(arbol,tabla)
         }
-
+        if(resValor===null){
+            return new Errores('SEMANTICO', 'El valor a asignar es nulo',
+                this.linea, this.col
+            )
+        }
         console.log("El valor a asignar despues de interpretar es este. ")
         console.log(resValor)
         console.log(resValor.tipoDato)

@@ -27,35 +27,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Instruccion_1 = require("../abstracto/Instruccion");
-const Tipo_1 = __importStar(require("../simbolo/Tipo"));
 const Errores_1 = __importDefault(require("../excepciones/Errores"));
-const Llamada_1 = __importDefault(require("./Llamada"));
-const Nativo_1 = __importDefault(require("../expresiones/Nativo"));
-class Print extends Instruccion_1.Instruccion {
-    constructor(exp, linea, col) {
+const Tipo_1 = __importStar(require("../simbolo/Tipo"));
+class AccesoMatriz extends Instruccion_1.Instruccion {
+    constructor(id, fila, columna, linea, col) {
         super(new Tipo_1.default(Tipo_1.tipoDato.VOID), linea, col);
-        this.expresion = exp;
+        this.id = id;
+        this.fila = fila;
+        this.columna = columna;
     }
     interpretar(arbol, tabla) {
-        console.log("La expresion que mandaron a imprimir es esto ");
-        if (this.expresion instanceof Llamada_1.default) {
-            console.log("Una llamada se quiere asignar");
-            let valorLlamada = this.expresion.interpretar(arbol, tabla);
-            let valorImprimir = valorLlamada.interpretar(arbol, tabla);
-            arbol.Print(valorImprimir);
-            return;
+        let vector = tabla.getVariable(this.id);
+        if (vector == null) {
+            return new Errores_1.default('SEMANTICO', 'No existe un vector con ese nombre', this.linea, this.col);
         }
-        console.log(this.expresion);
-        let valor = this.expresion.interpretar(arbol, tabla);
-        console.log("-----------El valor que se obtuvo al interpretar en IMPRIMIR--------------------------------");
-        console.log(valor);
-        //esto podria dar un error, cualquier cosa borrar esto
-        if (valor instanceof Nativo_1.default) {
-            valor = valor.interpretar(arbol, tabla);
+        let fila = this.fila.interpretar(arbol, tabla);
+        if (fila instanceof Errores_1.default)
+            return fila;
+        if (this.fila.tipoDato.getTipo() != Tipo_1.tipoDato.ENTERO) {
+            return new Errores_1.default('SEMANTICO', 'Indice del vector no válido', this.linea, this.col);
         }
-        if (valor instanceof Errores_1.default)
-            return valor;
-        arbol.Print(valor);
+        let columna = this.columna.interpretar(arbol, tabla);
+        if (columna instanceof Errores_1.default)
+            return columna;
+        if (this.columna.tipoDato.getTipo() != Tipo_1.tipoDato.ENTERO) {
+            return new Errores_1.default('SEMANTICO', 'Indice del vector no válido', this.linea, this.col);
+        }
+        this.tipoDato = vector.getTipo();
+        return vector.getValor()[parseInt(fila)][parseInt(columna)];
     }
 }
-exports.default = Print;
+exports.default = AccesoMatriz;
