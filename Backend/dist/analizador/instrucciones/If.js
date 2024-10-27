@@ -33,6 +33,7 @@ const Tipo_1 = __importStar(require("../simbolo/Tipo"));
 const Break_1 = __importDefault(require("./Break"));
 const Continue_1 = __importDefault(require("./Continue"));
 const Return_1 = __importDefault(require("./Return"));
+const ReturnDefault_1 = __importDefault(require("./ReturnDefault"));
 class If extends Instruccion_1.Instruccion {
     constructor(cond, ins, linea, col) {
         super(new Tipo_1.default(Tipo_1.tipoDato.VOID), linea, col);
@@ -58,6 +59,9 @@ class If extends Instruccion_1.Instruccion {
                 if (i instanceof Return_1.default) {
                     return i;
                 }
+                if (i instanceof ReturnDefault_1.default) {
+                    return i;
+                }
                 let resultados = i.interpretar(arbol, nuevaTabla);
                 if (resultados instanceof Break_1.default) {
                     return resultados;
@@ -66,6 +70,9 @@ class If extends Instruccion_1.Instruccion {
                     return resultados;
                 }
                 if (resultados instanceof Return_1.default) {
+                    return resultados;
+                }
+                if (resultados instanceof ReturnDefault_1.default) {
                     return resultados;
                 }
                 if (resultados instanceof Errores_1.default) {

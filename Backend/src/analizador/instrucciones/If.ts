@@ -6,6 +6,7 @@ import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Break from "./Break";
 import Continue from "./Continue";
 import Return from "./Return";
+import ReturnDefault from "./ReturnDefault";
 
 export default class If extends Instruccion {
     private condicion: Instruccion
@@ -38,6 +39,9 @@ export default class If extends Instruccion {
                 if(i instanceof Return){
                     return i
                 }
+                if(i instanceof ReturnDefault){
+                    return i
+                }
                 let resultados = i.interpretar(arbol, nuevaTabla)
                 if(resultados instanceof Break){
                     return resultados
@@ -46,6 +50,9 @@ export default class If extends Instruccion {
                     return resultados
                 }
                 if(resultados instanceof Return){
+                    return resultados
+                }
+                if(resultados instanceof ReturnDefault){
                     return resultados
                 }
                 if (resultados instanceof Errores) {

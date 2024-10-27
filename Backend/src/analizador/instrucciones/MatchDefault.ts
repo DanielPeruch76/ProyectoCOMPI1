@@ -7,6 +7,7 @@ import Break from "./Break";
 import Continue from "./Continue";
 import ObjetoMatch from "./ObjetoMatch";
 import Return from "./Return";
+import ReturnDefault from "./ReturnDefault";
 
 
 export default class MatchDefault extends Instruccion {
@@ -31,7 +32,7 @@ export default class MatchDefault extends Instruccion {
                 let instruccionesMatch=op.getInstrucciones();
                 for(let k of instruccionesMatch){
                     if(k instanceof Break){
-                        return k
+                        return null
                     }
                     if(k instanceof Continue){
                         return k
@@ -39,14 +40,20 @@ export default class MatchDefault extends Instruccion {
                     if(k instanceof Return){
                         return k
                     }
+                    if(k instanceof ReturnDefault){
+                        return k
+                    }
                     let resultados = k.interpretar(arbol, nuevaTabla)
                     if(resultados instanceof Break){
-                        return resultados
+                        return null
                     }
                     if(resultados instanceof Continue){
                         return resultados
                     }
                     if(resultados instanceof Return){
+                        return resultados
+                    }
+                    if(resultados instanceof ReturnDefault){
                         return resultados
                     }
                     if (resultados instanceof Errores) {
@@ -58,7 +65,7 @@ export default class MatchDefault extends Instruccion {
 
         for(let r of this.instruccionesDefault){
             if(r instanceof Break){
-                return r
+                return null
             }
             if(r instanceof Continue){
                 return r
@@ -66,14 +73,20 @@ export default class MatchDefault extends Instruccion {
             if(r instanceof Return){
                 return r
             }
+            if(r instanceof ReturnDefault){
+                return r
+            }
             let resultados = r.interpretar(arbol, nuevaTabla)
             if(resultados instanceof Break){
-                return resultados
+                return null
             }
             if(resultados instanceof Continue){
                 return resultados
             }
             if(resultados instanceof Return){
+                return resultados
+            }
+            if(resultados instanceof ReturnDefault){
                 return resultados
             }
             if (resultados instanceof Errores) {

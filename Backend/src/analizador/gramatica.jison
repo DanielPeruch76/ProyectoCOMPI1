@@ -39,6 +39,7 @@
   const AccesoVector = require('./instrucciones/AccesoVector')
   const AccesoMatriz = require('./instrucciones/AccesoMatriz')
   const IfTernario = require('./instrucciones/IfTernario')
+  const ReturnDefault = require('./instrucciones/ReturnDefault')
 %}
 
 
@@ -152,13 +153,14 @@ INSTRUCCION : IMPRESION PUNTOCOMA     {$$ = $1;}
             | SBREAK PUNTOCOMA                    {$$ = $1;}
             | SCONTINUE PUNTOCOMA                     {$$ = $1;}
             | SRETURN PUNTOCOMA                     {$$ = $1;}
+            | SRETURNSOLO PUNTOCOMA                     {$$ = $1;}
             | SDO PUNTOCOMA                     {$$ = $1;}
             | SWHILE                  {$$ = $1;}
             | SLOOP                   {$$ = $1;}
             | SFOR                  {$$ = $1;}
             | SSWITCH                  {$$ = $1;}
             | METODO                  {$$ = $1;}
-            | FUNCIONES               {$$ = $1;}
+            | FUNCIONES               {$$ = $1;} 
             | EJECUTAR PUNTOCOMA      {$$ = $1;}
             | LLAMADA PUNTOCOMA       {$$ = $1;}
 ;
@@ -253,6 +255,9 @@ SCONTINUE: CONTINUE {$$ = new Continue.default(@1.first_line, @1.first_column );
 ;
 
 SRETURN: RETURN EXPRESION{$$ = new Return.default($2, @1.first_line, @1.first_column );}
+;
+
+SRETURNSOLO: RETURN {$$ = new ReturnDefault.default(@1.first_line, @1.first_column );}
 ;
 
 METODO :FUNCTION VOID ID PAR1 PARAMS PAR2 LLAVE1 INSTRUCCIONES LLAVE2   {$$ = new Metodo.default(new Tipo.default(Tipo.tipoDato.VOID), $3, $5, $8, @1.first_line, @1.first_column);}

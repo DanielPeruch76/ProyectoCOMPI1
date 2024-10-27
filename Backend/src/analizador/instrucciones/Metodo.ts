@@ -3,6 +3,7 @@ import Errores from '../excepciones/Errores'
 import Arbol from '../simbolo/Arbol'
 import tablaSimbolo from '../simbolo/tablaSimbolo'
 import Tipo, { tipoDato } from '../simbolo/Tipo'
+import ReturnDefault from './ReturnDefault'
 
 
 
@@ -20,7 +21,13 @@ export default class Metodo extends Instruccion {
 
     interpretar(arbol: Arbol, tabla: tablaSimbolo) {
         for (let i of this.instrucciones) {
+            if(i instanceof ReturnDefault){
+                return
+            }
             let resultado = i.interpretar(arbol, tabla)
+            if(resultado instanceof ReturnDefault){
+                return
+            }
             if (resultado instanceof Errores) arbol.addErrores(resultado)
         }
     }

@@ -6,6 +6,7 @@ import Tipo, { tipoDato } from "../simbolo/Tipo";
 import Break from "./Break";
 import Continue from "./Continue";
 import Return from "./Return";
+import ReturnDefault from "./ReturnDefault";
 
 
 export default class Default extends Instruccion {
@@ -20,7 +21,7 @@ export default class Default extends Instruccion {
         let nuevaTabla = new tablaSimbolo(tabla)
         for (let i of this.instrucciones) {
             if(i instanceof Break){
-                return i
+                return null
             }
             if(i instanceof Continue){
                 return i
@@ -28,14 +29,20 @@ export default class Default extends Instruccion {
             if(i instanceof Return){
                 return i
             }
+            if(i instanceof ReturnDefault){
+                return i
+            }
             let resultados = i.interpretar(arbol, nuevaTabla)
             if(resultados instanceof Break){
-                return resultados
+                return null
             }
             if(resultados instanceof Continue){
                 return resultados
             }
             if(resultados instanceof Return){
+                return resultados
+            }
+            if(resultados instanceof ReturnDefault){
                 return resultados
             }
             if (resultados instanceof Errores) {
