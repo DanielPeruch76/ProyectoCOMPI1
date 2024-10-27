@@ -31,6 +31,7 @@ export default class IfElse extends Instruccion {
 
         let nuevaTabla = new tablaSimbolo(tabla)
         if (cond) {
+            console.log("se entro a  la condicion del if")
             for (let i of this.instrucciones) {
                 if(i instanceof Break){
                     return i
@@ -56,6 +57,7 @@ export default class IfElse extends Instruccion {
                 }
             }
         }else{
+            console.log("Se entro al else")
             for (let i of this.instruccionesElse) {
                 if(i instanceof Break){
                     return i

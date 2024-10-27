@@ -4,6 +4,7 @@ import Arbol from "../simbolo/Arbol";
 import Simbolo from "../simbolo/Simbolo";
 import tablaSimbolo from "../simbolo/tablaSimbolo";
 import Tipo, { tipoDato } from "../simbolo/Tipo";
+import IfTernario from "./IfTernario";
 import Llamada from "./Llamada";
 
 
@@ -25,9 +26,12 @@ export default class AsignacionVar extends Instruccion {
                 this.linea, this.col)
         }
 
-        console.log("--------------------nuevo valor a asignar :3--------------------------");
-        
+        console.log("--------------------nuevo valor a asignar :3--------------------------\n");
+        console.log(this.exp)
         let newValor = this.exp.interpretar(arbol, tabla)
+        if(this.exp instanceof IfTernario){
+            this.exp.tipoDato=newValor.tipoDato
+        }
         if(this.exp instanceof Llamada){
             newValor=newValor.interpretar(arbol, tabla)
         }
@@ -37,6 +41,7 @@ export default class AsignacionVar extends Instruccion {
         if (newValor instanceof Errores) return newValor
 
         if (this.exp.tipoDato.getTipo() != variable.getTipo().getTipo()) {
+            console.log("\n++++++++++++++++++++Hubo un error de tipos en la asignacion++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
             return new Errores('SEMANTICO', 'Los tipos deben de ser iguales',
                 this.linea, this.col)
         }

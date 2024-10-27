@@ -170,6 +170,8 @@ class Aritmeticas extends Instruccion_1.Instruccion {
                         return parseFloat(op1) + parseInt(op2);
                     case Tipo_1.tipoDato.DECIMAL:
                         this.tipoDato.setTipo(Tipo_1.tipoDato.DECIMAL);
+                        console.log("Se sumo este valor en la aritmetica");
+                        console.log(parseFloat(op1) + parseFloat(op2));
                         return parseFloat(op1) + parseFloat(op2);
                     case Tipo_1.tipoDato.STRING:
                         this.tipoDato.setTipo(Tipo_1.tipoDato.STRING);

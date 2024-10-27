@@ -38,6 +38,7 @@
   const AsignacionMatriz = require('./instrucciones/AsignacionMatriz')
   const AccesoVector = require('./instrucciones/AccesoVector')
   const AccesoMatriz = require('./instrucciones/AccesoMatriz')
+  const IfTernario = require('./instrucciones/IfTernario')
 %}
 
 
@@ -78,6 +79,7 @@
 "vector"              return 'VECTOR'
 "function"            return 'FUNCTION'
 "return"              return 'RETURN'
+"null"                return 'NULL'
 ";"                     return 'PUNTOCOMA'
 ":"                     return 'DOSPUNTOS'
 "+"                     return 'MAS'
@@ -177,6 +179,7 @@ DECLARACION : MUTABILIDAD LISTAID DOSPUNTOS TIPOS IGUAL EXPRESION  {$$ = new Dec
             | MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 COR1 COR2 IGUAL NEW VECTOR TIPOS COR1 EXPRESION COR2 COR1 EXPRESION COR2 {$$ = new DeclaracionMatriz.default($4,@1.first_line, @1.first_column,$1,$2[0], $12,$14,$17);}
             |MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 COR1 COR2 IGUAL COR1 LISTAMATRIZ COR2 { $$ = new DeclaracionMatrizDefecto.default($4,@1.first_line, @1.first_column,$1,$2[0],$11); }
             |MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 IGUAL LISTAVECTOR { $$ = new DeclararArregloDefecto.default($4,@1.first_line, @1.first_column,$1,$2[0],$8); }
+            |MUTABILIDAD LISTAID DOSPUNTOS TIPOS IGUAL SIFTERNARIO  {$$ = new Declaracion.default($4, @1.first_line, @1.first_column, $2[0], $6,$1);}
 ;
 
 LISTAMATRIZ: LISTAMATRIZ COMA LISTAVECTOR {$1.push($3); $$ = $1;}
@@ -201,6 +204,7 @@ ASIGNACION : ID IGUAL EXPRESION   {$$ = new AsignacionVar.default($1, $3, @1.fir
            | ID IGUAL CAST PAR1 EXPRESION AS TIPOS PAR2   {$$ = new CasteoAsignacion.default($1, $7,$5, @1.first_line, @1.first_column );}
            | ID COR1 EXPRESION COR2 IGUAL EXPRESION {$$ = new AsignacionVector.default($1, $3,$6, @1.first_line, @1.first_column );}
            | ID COR1 EXPRESION COR2 COR1 EXPRESION COR2 IGUAL EXPRESION {$$ = new AsignacionMatriz.default($1, $3,$6, $9, @1.first_line, @1.first_column );}
+           |ID IGUAL SIFTERNARIO   {$$ = new AsignacionVar.default($1, $3, @1.first_line, @1.first_column );}
       
 ;
 
@@ -232,6 +236,9 @@ SENTENCIAMATCH: CASE EXPRESION DOSPUNTOS INSTRUCCIONES {$$ = new ObjetoMatch.def
 SIF : IF PAR1 EXPRESION PAR2 LLAVE1 INSTRUCCIONES LLAVE2    {$$ = new If.default($3, $6, @1.first_line, @1.first_column);}
     | IF PAR1 EXPRESION PAR2 LLAVE1 INSTRUCCIONES LLAVE2 ELSE LLAVE1 INSTRUCCIONES LLAVE2   {$$ = new IfElse.default($3, $6,$10,@1.first_line, @1.first_column);}
     | IF PAR1 EXPRESION PAR2 LLAVE1 INSTRUCCIONES LLAVE2 ELSE SIF   {$$ = new Elif.default($3, $6,$9,@1.first_line, @1.first_column);}
+;
+
+SIFTERNARIO:IF PAR1 EXPRESION PAR2 EXPRESION DOSPUNTOS EXPRESION    {$$ = new IfTernario.default($3, $5, $7, @1.first_line, @1.first_column);}
 ;
 
 SWHILE : WHILE PAR1 EXPRESION PAR2 LLAVE1 INSTRUCCIONES LLAVE2  {$$ = new While.default($3, $6, @1.first_line, @1.first_column );}
@@ -299,6 +306,7 @@ EXPRESION : MENOS EXPRESION %prec UMENOS {$$ = new Aritmeticas.default(Aritmetic
           | TRUE                      {$$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), true,@1.first_line, @1.first_column);}
           | FALSE                     {$$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.BOOL), false,@1.first_line, @1.first_column);}
           | CHAR                      {$$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.CHAR), $1,@1.first_line, @1.first_column);}
+          | NULL                      {$$ = new Nativo.default(new Tipo.default(Tipo.tipoDato.NULL), null,@1.first_line, @1.first_column);}
           | LLAMADA {$$=$1}
           | ID COR1 EXPRESION COR2    {$$ = new AccesoVector.default($1, $3,@1.first_line, @1.first_column);}
           | ID COR1 EXPRESION COR2 COR1 EXPRESION COR2    {$$ = new AccesoMatriz.default($1, $3, $6, @1.first_line, @1.first_column);}
@@ -324,4 +332,5 @@ TIPOS : INT       {$$=new Tipo.default(Tipo.tipoDato.ENTERO);}
       | STRING    {$$=new Tipo.default(Tipo.tipoDato.STRING);}
       | BOOL      {$$=new Tipo.default(Tipo.tipoDato.BOOL);}
       | CARACTER      {$$=new Tipo.default(Tipo.tipoDato.CHAR);}
+      | NULL      {$$=new Tipo.default(Tipo.tipoDato.NULL);}
 ;

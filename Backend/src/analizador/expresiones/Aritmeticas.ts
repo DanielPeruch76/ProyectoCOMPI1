@@ -66,11 +66,11 @@ export default class Aritmeticas extends Instruccion {
             console.log("Es un acceso Matriz convirtio el opder en:")
             console.log(opDer)
         }
-        if(opDer instanceof AccesoVector){
+        if(opDer instanceof AccesoVector){ 
             opDer=opDer.interpretar(arbol,tabla)
             console.log("Es un acceso Matriz convirtio el opizq en:")
-            console.log(opDer)
-        }
+            console.log(opDer) 
+        } 
         if(opDer instanceof Nativo){
             opDer=opDer.interpretar(arbol,tabla)
             console.log("Se convirtio el opizq en:")
@@ -152,10 +152,12 @@ export default class Aritmeticas extends Instruccion {
                         return parseFloat(op1) + parseInt(op2);
                     case tipoDato.DECIMAL:
                         this.tipoDato.setTipo(tipoDato.DECIMAL);
+                        console.log("Se sumo este valor en la aritmetica")
+                        console.log(parseFloat(op1) + parseFloat(op2))
                         return parseFloat(op1) + parseFloat(op2);
                     case tipoDato.STRING:
                         this.tipoDato.setTipo(tipoDato.STRING);
-                        return op1.toString() + op2.toString();
+                        return op1.toString() + op2.toString(); 
                     case tipoDato.CHAR:
                         this.tipoDato.setTipo(tipoDato.DECIMAL);
                         return parseFloat(op1) + op2.charCodeAt(0);

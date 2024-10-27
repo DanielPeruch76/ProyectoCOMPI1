@@ -49,6 +49,7 @@ class IfElse extends Instruccion_1.Instruccion {
         }
         let nuevaTabla = new tablaSimbolo_1.default(tabla);
         if (cond) {
+            console.log("se entro a  la condicion del if");
             for (let i of this.instrucciones) {
                 if (i instanceof Break_1.default) {
                     return i;
@@ -75,6 +76,7 @@ class IfElse extends Instruccion_1.Instruccion {
             }
         }
         else {
+            console.log("Se entro al else");
             for (let i of this.instruccionesElse) {
                 if (i instanceof Break_1.default) {
                     return i;

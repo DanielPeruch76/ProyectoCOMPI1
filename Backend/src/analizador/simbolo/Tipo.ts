@@ -21,5 +21,6 @@ export enum tipoDato {
     BOOL,
     CHAR,
     STRING,
+    NULL,
     VOID
 }

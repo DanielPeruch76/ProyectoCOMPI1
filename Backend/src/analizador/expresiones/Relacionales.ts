@@ -19,9 +19,14 @@ export default class Relacionales extends Instruccion {
     }
 
     interpretar(arbol: Arbol, tabla: tablaSimbolo) {
+        console.log("------------------Relacionales----------------------")
         let conIzq = this.cond1.interpretar(arbol, tabla)
+        console.log("Condicion izquierda")
+        console.log(conIzq)
         if (conIzq instanceof Errores) return conIzq
         let conDer = this.cond2.interpretar(arbol, tabla)
+        console.log("Condicion derecha")
+        console.log(conDer)
         if (conDer instanceof Errores) return conDer
 
         switch (this.relacional) {
@@ -60,6 +65,12 @@ export default class Relacionales extends Instruccion {
                         return parseInt(comp1) < parseInt(comp2)
                     case tipoDato.DECIMAL:
                         return parseInt(comp1) < parseFloat(comp2)
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.ENTERO);
+                        let caracter2 = comp2.toString().charAt(0);
+                        return parseInt(comp1)<parseInt(caracter2.charCodeAt(0));
+                    case tipoDato.NULL:
+                        return false;
                     default:
                         return new Errores('SEMANTICO', 'RELACIONAL INVALIDO',
                             this.linea, this.col)
@@ -70,6 +81,12 @@ export default class Relacionales extends Instruccion {
                         return parseFloat(comp1) < parseInt(comp2)
                     case tipoDato.DECIMAL:
                         return parseFloat(comp1) < parseFloat(comp2)
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.ENTERO);
+                        let caracter2 = comp2.toString().charAt(0);
+                        return parseInt(comp1)<parseInt(caracter2.charCodeAt(0));
+                    case tipoDato.NULL:
+                        return false;
                     default:
                         return new Errores('SEMANTICO', 'RELACIONAL INVALIDO',
                             this.linea, this.col)
@@ -96,6 +113,10 @@ export default class Relacionales extends Instruccion {
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         const caracter = condicionDerecha.toString().charAt(0);
                         return (parseInt(condicionIzquierda) === parseInt(caracter));
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        console.log(condicionIzquierda)
+                        return condicionIzquierda ===condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Int", this.linea, this.col);
                 }
@@ -111,6 +132,9 @@ export default class Relacionales extends Instruccion {
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         const caracterChar = condicionDerecha.toString().charAt(0);
                         return (parseFloat(condicionIzquierda) === parseInt(caracterChar));
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda ===condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Double", this.linea, this.col);
                 }
@@ -129,6 +153,9 @@ export default class Relacionales extends Instruccion {
                         const caracterIzquierda = condicionIzquierda.toString().charAt(0);
                         const caracterDerecha = condicionDerecha.toString().charAt(0);
                         return caracterIzquierda === caracterDerecha;
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda ===condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
                 }
@@ -137,6 +164,9 @@ export default class Relacionales extends Instruccion {
                     case tipoDato.STRING:
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         return condicionIzquierda.toString().localeCompare(condicionDerecha.toString()) === 0;
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda ===condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo String", this.linea, this.col);
                 }
@@ -145,18 +175,44 @@ export default class Relacionales extends Instruccion {
                     case tipoDato.BOOL:
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         return condicionIzquierda.toString().toLowerCase() === condicionDerecha.toString().toLowerCase();
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda ===condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Boolean", this.linea, this.col);
                 }
+            case tipoDato.NULL:
+                switch (tipoCondicionDerecha) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda ===condicionDerecha;
+                    case tipoDato.DECIMAL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda ===condicionDerecha;
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda ===condicionDerecha;
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda ===condicionDerecha;
+                    default:
+                        return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
+                }
+
             default:
                 return new Errores("Error Semántico", "Dato Comparado Izquierdo No Apto Para Operación De Comparación", this.linea, this.col);
         }
     }
 
     public noIgual(condicionIzquierda: any, condicionDerecha: any) {
+        console.log("-----------------------Se verifica si son diferentes-------------------------------")
         const tipoCondicionIzquierda = this.cond1.tipoDato.getTipo();
         const tipoCondicionDerecha = this.cond2.tipoDato.getTipo();
-        
+        console.log("El tipo de dato de la condicion 1")
+        console.log(tipoCondicionIzquierda)
+        console.log("El tipo de dato de la condicion 2")
+        console.log(tipoCondicionDerecha)
+         
         switch (tipoCondicionIzquierda) {
             case tipoDato.ENTERO: {
                 switch (tipoCondicionDerecha) {
@@ -171,11 +227,15 @@ export default class Relacionales extends Instruccion {
                         const caracter = condicionDerecha.toString().charAt(0);
                         return parseInt(condicionIzquierda) !== parseInt(caracter);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda !=condicionDerecha;
                     default:
                         return new Errores("SEMANTICO", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Int", this.linea, this.col);
                 }
             }
             case tipoDato.DECIMAL: {
+                console.log("Esta entrando en el decimal")
                 switch (tipoCondicionDerecha) {
                     case tipoDato.ENTERO:
                         this.tipoDato.setTipo(tipoDato.BOOL);
@@ -188,6 +248,9 @@ export default class Relacionales extends Instruccion {
                         const caracter = condicionDerecha.toString().charAt(0);
                         return parseFloat(condicionIzquierda) !== parseInt(caracter);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda != condicionDerecha;
                     default:
                         return new Errores("SEMANTICO", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Double", this.linea, this.col);
                 }
@@ -210,6 +273,9 @@ export default class Relacionales extends Instruccion {
                         const caracterDerecha = condicionDerecha.toString().charAt(0);
                         return caracterIzquierda !== caracterDerecha;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda !=condicionDerecha;
                     default:
                         return new Errores("SEMANTICO", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
                 }
@@ -220,6 +286,9 @@ export default class Relacionales extends Instruccion {
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         return condicionIzquierda.toString().toLowerCase() !== condicionDerecha.toString().toLowerCase();
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda !=condicionDerecha;
                     default:
                         return new Errores("SEMANTICO", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo String", this.linea, this.col);
                 }
@@ -230,10 +299,30 @@ export default class Relacionales extends Instruccion {
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         return (condicionIzquierda as boolean) !== (condicionDerecha as boolean);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda !=condicionDerecha;
                     default:
                         return new Errores("SEMANTICO", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Boolean", this.linea, this.col);
                 }
             }
+            case tipoDato.NULL:
+                switch (tipoCondicionDerecha) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda !=condicionDerecha;
+                    case tipoDato.DECIMAL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda !=condicionDerecha;
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda !=condicionDerecha;
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda !=condicionDerecha;
+                    default:
+                        return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
+                }
             default:
                 return new Errores("SEMANTICO", "Dato Comparado Izquierdo No Apto Para Operación De Comparación", this.linea, this.col);
         }
@@ -257,6 +346,9 @@ export default class Relacionales extends Instruccion {
                         const caracter = condicionDerecha.toString().charAt(0);
                         return parseInt(condicionIzquierda) < parseInt(caracter);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Int", this.linea, this.col);
                 }
@@ -269,11 +361,13 @@ export default class Relacionales extends Instruccion {
                     case tipoDato.DECIMAL:
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         return parseFloat(condicionIzquierda) < parseFloat(condicionDerecha);
-                    case tipoDato.CHAR: {
+                    case tipoDato.CHAR: 
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         const caracter = condicionDerecha.toString().charAt(0);
                         return parseFloat(condicionIzquierda) < parseInt(caracter);
-                    }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Double", this.linea, this.col);
                 }
@@ -296,6 +390,9 @@ export default class Relacionales extends Instruccion {
                         const caracterDerecha = condicionDerecha.toString().charAt(0);
                         return caracterIzquierda < caracterDerecha;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
                 }
@@ -306,6 +403,9 @@ export default class Relacionales extends Instruccion {
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         return condicionIzquierda.toString().length < condicionDerecha.toString().length;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo String", this.linea, this.col);
                 }
@@ -330,10 +430,30 @@ export default class Relacionales extends Instruccion {
                         }
                         return op1<op2;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Boolean", this.linea, this.col);
                 }
             }
+            case tipoDato.NULL:
+                switch (tipoCondicionDerecha) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <condicionDerecha;
+                    case tipoDato.DECIMAL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <condicionDerecha;
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <condicionDerecha;
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <condicionDerecha;
+                    default:
+                        return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
+                }
             default:
                 return new Errores("Error Semántico", "Dato Comparado Izquierdo No Apto Para Operación De Comparación", this.linea, this.col);
         }
@@ -357,6 +477,9 @@ export default class Relacionales extends Instruccion {
                         const caracter = condicionDerecha.toString().charAt(0);
                         return parseInt(condicionIzquierda) > parseInt(caracter);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Int", this.linea, this.col);
                 }
@@ -374,6 +497,9 @@ export default class Relacionales extends Instruccion {
                         const caracter = condicionDerecha.toString().charAt(0);
                         return parseFloat(condicionIzquierda) > parseInt(caracter);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Double", this.linea, this.col);
                 }
@@ -396,6 +522,9 @@ export default class Relacionales extends Instruccion {
                         const caracterDerecha = condicionDerecha.toString().charAt(0);
                         return caracterIzquierda > caracterDerecha;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
                 }
@@ -406,6 +535,9 @@ export default class Relacionales extends Instruccion {
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         return condicionIzquierda.toString().length > condicionDerecha.toString().length;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo String", this.linea, this.col);
                 }
@@ -430,10 +562,30 @@ export default class Relacionales extends Instruccion {
                         }
                         return op1>op2;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >condicionDerecha;
                     default:
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Boolean", this.linea, this.col);
                 }
             }
+            case tipoDato.NULL:
+                switch (tipoCondicionDerecha) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >condicionDerecha;
+                    case tipoDato.DECIMAL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >condicionDerecha;
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >condicionDerecha;
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >condicionDerecha;
+                    default:
+                        return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
+                }
             default:
                 return new Errores("Error Semántico", "Dato Comparado Izquierdo No Apto Para Operación De Comparación", this.linea, this.col);
         }
@@ -442,7 +594,7 @@ export default class Relacionales extends Instruccion {
     public MayorIgual(condicionIzquierda: any, condicionDerecha: any){
         const tipoCondicionIzquierda = this.cond1.tipoDato.getTipo();
         const tipoCondicionDerecha = this.cond2.tipoDato.getTipo();
-    
+        
         switch (tipoCondicionIzquierda) {
             case tipoDato.ENTERO: {
                 switch (tipoCondicionDerecha) {
@@ -459,6 +611,9 @@ export default class Relacionales extends Instruccion {
                         const caracter: string = condicionDerecha.toString().charAt(0);
                         return parseInt(condicionIzquierda) >= parseInt(caracter);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >=condicionDerecha;
                     default: {
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Int", this.linea, this.col);
                     }
@@ -479,6 +634,9 @@ export default class Relacionales extends Instruccion {
                         const caracter: string = condicionDerecha.toString().charAt(0);
                         return parseFloat(condicionIzquierda) >= parseInt(caracter);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >=condicionDerecha;
                     default: {
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Double", this.linea, this.col);
                     }
@@ -502,6 +660,9 @@ export default class Relacionales extends Instruccion {
                         const caracterDerecha: string = condicionDerecha.toString().charAt(0);
                         return caracterIzquierda >= caracterDerecha;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >=condicionDerecha;
                     default: {
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
                     }
@@ -513,6 +674,9 @@ export default class Relacionales extends Instruccion {
                         this.tipoDato.setTipo(tipoDato.BOOL);
                         return condicionIzquierda.toString().length >= condicionDerecha.toString().length;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >=condicionDerecha;
                     default: {
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo String", this.linea, this.col);
                     }
@@ -538,11 +702,31 @@ export default class Relacionales extends Instruccion {
                         }
                         return op1>=op2;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >=condicionDerecha;
                     default: {
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Boolean", this.linea, this.col);
                     }
                 }
             }
+            case tipoDato.NULL:
+                switch (tipoCondicionDerecha) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >=condicionDerecha;
+                    case tipoDato.DECIMAL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >=condicionDerecha;
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >=condicionDerecha;
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda >=condicionDerecha;
+                    default:
+                        return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
+                }
             default: {
                 return new Errores("Error Semántico", "Dato Comparado Izquierdo No Apto Para Operación De Comparación", this.linea, this.col);
             }
@@ -570,6 +754,9 @@ export default class Relacionales extends Instruccion {
                         const caracter: string = condicionDerecha.toString().charAt(0);
                         return parseInt(condicionIzquierda) <= parseInt(caracter);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <=condicionDerecha;
                     default: {
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Int", this.linea, this.col);
                     }
@@ -590,6 +777,9 @@ export default class Relacionales extends Instruccion {
                         const caracter: string = condicionDerecha.toString().charAt(0);
                         return parseFloat(condicionIzquierda) <= parseInt(caracter);
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <=condicionDerecha;
                     default: {
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Double", this.linea, this.col);
                     }
@@ -613,19 +803,11 @@ export default class Relacionales extends Instruccion {
                         const caracterDerecha: string = condicionDerecha.toString().charAt(0);
                         return caracterIzquierda <= caracterDerecha;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <=condicionDerecha;
                     default: {
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
-                    }
-                }
-            }
-            case tipoDato.CHAR: {
-                switch (tipoCondicionDerecha) {
-                    case tipoDato.STRING: {
-                        this.tipoDato.setTipo(tipoDato.BOOL);
-                        return condicionIzquierda.toString().length <= condicionDerecha.toString().length;
-                    }
-                    default: {
-                        return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo String", this.linea, this.col);
                     }
                 }
             }
@@ -649,11 +831,31 @@ export default class Relacionales extends Instruccion {
                         }
                         return op1<=op2;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <=condicionDerecha;
                     default: {
                         return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Boolean", this.linea, this.col);
                     }
                 }
             }
+            case tipoDato.NULL:
+                switch (tipoCondicionDerecha) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <=condicionDerecha;
+                    case tipoDato.DECIMAL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <=condicionDerecha;
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <=condicionDerecha;
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return condicionIzquierda <=condicionDerecha;
+                    default:
+                        return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
+                }
             default: {
                 return new Errores("Error Semántico", "Dato Comparado Izquierdo No Apto Para Operación De Comparación", this.linea, this.col);
             }
@@ -682,6 +884,9 @@ export default class Relacionales extends Instruccion {
                         }
                         return envio1&&envio2;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
                     default: {
                         return new Errores(
                             "Error Semántico",
@@ -692,6 +897,23 @@ export default class Relacionales extends Instruccion {
                     }
                 }
             }
+            case tipoDato.NULL:
+                switch (tipoCondicionDerecha) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
+                    case tipoDato.DECIMAL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
+                    default:
+                        return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
+                }
             default: {
                 return new Errores(
                     "Error Semántico",
@@ -726,6 +948,9 @@ export default class Relacionales extends Instruccion {
                         }
                         return envio1||envio2;
                     }
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
                     default: {
                         return new Errores(
                             "Error Semántico",
@@ -736,6 +961,23 @@ export default class Relacionales extends Instruccion {
                     }
                 }
             }
+            case tipoDato.NULL:
+                switch (tipoCondicionDerecha) {
+                    case tipoDato.ENTERO:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
+                    case tipoDato.DECIMAL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
+                    case tipoDato.CHAR:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
+                    case tipoDato.NULL:
+                        this.tipoDato.setTipo(tipoDato.BOOL);
+                        return false
+                    default:
+                        return new Errores("Error Semántico", "Dato Comparado Derecho No Apto Para Comparación con Dato Tipo Char", this.linea, this.col);
+                }
             default: {
                 return new Errores(
                     "Error Semántico",
@@ -770,6 +1012,8 @@ export default class Relacionales extends Instruccion {
                         }
                         return envio1&&envio2;
                     }
+                    case tipoDato.NULL:
+                        return false
                     default: {
                         return new Errores(
                             "Error Semántico",
@@ -805,6 +1049,8 @@ export default class Relacionales extends Instruccion {
                 }
                 return !(envio1);
             }
+            case tipoDato.NULL:
+                return false
             default: {
                 return new Errores(
                     "Error Semántico",

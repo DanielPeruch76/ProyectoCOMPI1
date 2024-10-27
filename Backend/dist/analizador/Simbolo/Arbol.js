@@ -36,7 +36,74 @@ class Arbol {
         return this.errores;
     }
     Print(entrada) {
-        this.consola = `${this.consola}${entrada}\n`;
+        const tamanioCadena = entrada.length;
+        let siglas = 0;
+        let cadenaEvaluar = entrada;
+        for (let i = 0; i < tamanioCadena; i++) {
+            switch (cadenaEvaluar.charAt(i)) {
+                case '\\':
+                    switch (cadenaEvaluar.charAt(i + 1)) {
+                        case 'n': {
+                            if (i === 0) {
+                                this.consola += "\n";
+                                entrada = entrada.substring(2);
+                                siglas += 2;
+                            }
+                            else if (i === tamanioCadena - 2) {
+                                this.consola += entrada.substring(0, i - siglas) + "\n";
+                                entrada = "";
+                            }
+                            else {
+                                this.consola += entrada.substring(0, i - siglas) + "\n";
+                                const quitado = entrada.substring(0, i - siglas + 2).length;
+                                entrada = entrada.substring(i - siglas + 2);
+                                siglas += quitado;
+                            }
+                            break;
+                        }
+                        case 't': {
+                            if (i === 0) {
+                                this.consola += "\t";
+                                entrada = entrada.substring(2);
+                                siglas += 2;
+                            }
+                            else if (i === tamanioCadena - 2) {
+                                this.consola += entrada.substring(0, i - siglas) + "\t";
+                                entrada = "";
+                            }
+                            else {
+                                this.consola += entrada.substring(0, i - siglas) + "\t";
+                                const quitado = entrada.substring(0, i - siglas + 2).length;
+                                entrada = entrada.substring(i - siglas + 2);
+                                siglas += quitado;
+                            }
+                            break;
+                        }
+                        case 'r': {
+                            if (i === 0) {
+                                this.consola += "\r";
+                                entrada = entrada.substring(2);
+                                siglas += 2;
+                            }
+                            else if (i === tamanioCadena - 2) {
+                                this.consola += entrada.substring(0, i - siglas) + "\r";
+                                entrada = "";
+                            }
+                            else {
+                                this.consola += entrada.substring(0, i - siglas) + "\r";
+                                const quitado = entrada.substring(0, i - siglas + 2).length;
+                                entrada = entrada.substring(i - siglas + 2);
+                                siglas += quitado;
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        this.consola += entrada + "\n";
     }
     addErrores(error) {
         this.errores.push(error);

@@ -20,5 +20,6 @@ var tipoDato;
     tipoDato[tipoDato["BOOL"] = 2] = "BOOL";
     tipoDato[tipoDato["CHAR"] = 3] = "CHAR";
     tipoDato[tipoDato["STRING"] = 4] = "STRING";
-    tipoDato[tipoDato["VOID"] = 5] = "VOID";
+    tipoDato[tipoDato["NULL"] = 5] = "NULL";
+    tipoDato[tipoDato["VOID"] = 6] = "VOID";
 })(tipoDato || (exports.tipoDato = tipoDato = {}));

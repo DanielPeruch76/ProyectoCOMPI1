@@ -14,7 +14,7 @@ export default class DeclaracionDefecto extends Instruccion {
         this.identificadores= identificadores
         this.mutabilidad=mutabilidad
     }
-
+ 
     interpretar(arbol: Arbol, tabla: tablaSimbolo) {
 
         for(let i of this.identificadores){

@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Instruccion_1 = require("../abstracto/Instruccion");
 const Errores_1 = __importDefault(require("../excepciones/Errores"));
 const Tipo_1 = __importStar(require("../simbolo/Tipo"));
+const IfTernario_1 = __importDefault(require("./IfTernario"));
 const Llamada_1 = __importDefault(require("./Llamada"));
 class AsignacionVar extends Instruccion_1.Instruccion {
     constructor(id, exp, linea, col) {
@@ -41,8 +42,12 @@ class AsignacionVar extends Instruccion_1.Instruccion {
         if (variable == null) {
             return new Errores_1.default('SEMANTICO', 'La variable no existe', this.linea, this.col);
         }
-        console.log("--------------------nuevo valor a asignar :3--------------------------");
+        console.log("--------------------nuevo valor a asignar :3--------------------------\n");
+        console.log(this.exp);
         let newValor = this.exp.interpretar(arbol, tabla);
+        if (this.exp instanceof IfTernario_1.default) {
+            this.exp.tipoDato = newValor.tipoDato;
+        }
         if (this.exp instanceof Llamada_1.default) {
             newValor = newValor.interpretar(arbol, tabla);
         }
@@ -51,6 +56,7 @@ class AsignacionVar extends Instruccion_1.Instruccion {
         if (newValor instanceof Errores_1.default)
             return newValor;
         if (this.exp.tipoDato.getTipo() != variable.getTipo().getTipo()) {
+            console.log("\n++++++++++++++++++++Hubo un error de tipos en la asignacion++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
             return new Errores_1.default('SEMANTICO', 'Los tipos deben de ser iguales', this.linea, this.col);
         }
         if (variable.getMutabilidad().toLowerCase() === "const") {
