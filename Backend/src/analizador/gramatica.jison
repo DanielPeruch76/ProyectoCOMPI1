@@ -40,6 +40,14 @@
   const AccesoMatriz = require('./instrucciones/AccesoMatriz')
   const IfTernario = require('./instrucciones/IfTernario')
   const ReturnDefault = require('./instrucciones/ReturnDefault')
+  const Lower = require('./instrucciones/Lower')
+  const Upper = require('./instrucciones/Upper')
+  const Round = require('./instrucciones/Round')
+  const Lenght = require('./instrucciones/Lenght')
+  const Truncate = require('./instrucciones/Truncate')
+  const ToString = require('./instrucciones/ToString')
+  const CharArray = require('./instrucciones/CharArray')
+  const Reverse = require('./instrucciones/Reverse')
 %}
 
 
@@ -81,6 +89,14 @@
 "function"            return 'FUNCTION'
 "return"              return 'RETURN'
 "null"                return 'NULL'
+"lower"                return 'LOWER'
+"upper"                return 'UPPER'
+"round"                return 'ROUND'
+"len"                  return 'LEN'
+"truncate"                  return 'TRUNCATE'
+"toString"            return 'TOSTRING'
+"toCharArray"         return 'TOCHARARRAY'
+"reverse"         return 'REVERSE'
 ";"                     return 'PUNTOCOMA'
 ":"                     return 'DOSPUNTOS'
 "+"                     return 'MAS'
@@ -163,6 +179,7 @@ INSTRUCCION : IMPRESION PUNTOCOMA     {$$ = $1;}
             | FUNCIONES               {$$ = $1;} 
             | EJECUTAR PUNTOCOMA      {$$ = $1;}
             | LLAMADA PUNTOCOMA       {$$ = $1;}
+            | FUNCIONREVERSE PUNTOCOMA       {$$ = $1;}
 ;
 
 IMPRESION : TKPRINT EXPRESION  {$$ = new Print.default($2, @1.first_line, @1.first_column)}
@@ -182,6 +199,10 @@ DECLARACION : MUTABILIDAD LISTAID DOSPUNTOS TIPOS IGUAL EXPRESION  {$$ = new Dec
             |MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 COR1 COR2 IGUAL COR1 LISTAMATRIZ COR2 { $$ = new DeclaracionMatrizDefecto.default($4,@1.first_line, @1.first_column,$1,$2[0],$11); }
             |MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 IGUAL LISTAVECTOR { $$ = new DeclararArregloDefecto.default($4,@1.first_line, @1.first_column,$1,$2[0],$8); }
             |MUTABILIDAD LISTAID DOSPUNTOS TIPOS IGUAL SIFTERNARIO  {$$ = new Declaracion.default($4, @1.first_line, @1.first_column, $2[0], $6,$1);}
+            |MUTABILIDAD LISTAID DOSPUNTOS TIPOS COR1 COR2 IGUAL EXPRESION {$$ = new Declaracion.default($4, @1.first_line, @1.first_column, $2[0], $8,$1);}
+;
+
+FUNCIONREVERSE: REVERSE PAR1 ID PAR2  {$$ = new Reverse.default($3, @1.first_line, @1.first_column);}
 ;
 
 LISTAMATRIZ: LISTAMATRIZ COMA LISTAVECTOR {$1.push($3); $$ = $1;}
@@ -207,7 +228,7 @@ ASIGNACION : ID IGUAL EXPRESION   {$$ = new AsignacionVar.default($1, $3, @1.fir
            | ID COR1 EXPRESION COR2 IGUAL EXPRESION {$$ = new AsignacionVector.default($1, $3,$6, @1.first_line, @1.first_column );}
            | ID COR1 EXPRESION COR2 COR1 EXPRESION COR2 IGUAL EXPRESION {$$ = new AsignacionMatriz.default($1, $3,$6, $9, @1.first_line, @1.first_column );}
            |ID IGUAL SIFTERNARIO   {$$ = new AsignacionVar.default($1, $3, @1.first_line, @1.first_column );}
-      
+           || ID COR1 EXPRESION COR2 IGUAL SIFTERNARIO {$$ = new AsignacionVector.default($1, $3,$6, @1.first_line, @1.first_column );}
 ;
 
 SSWITCH: SWITCH PAR1 EXPRESION PAR2 LLAVE1 INSTRUCCIONESMATCH LLAVE2{$$ = new Match.default($3, $6, @1.first_line, @1.first_column );} 
@@ -241,6 +262,9 @@ SIF : IF PAR1 EXPRESION PAR2 LLAVE1 INSTRUCCIONES LLAVE2    {$$ = new If.default
 ;
 
 SIFTERNARIO:IF PAR1 EXPRESION PAR2 EXPRESION DOSPUNTOS EXPRESION    {$$ = new IfTernario.default($3, $5, $7, @1.first_line, @1.first_column);}
+           |IF PAR1 EXPRESION PAR2 SIFTERNARIO DOSPUNTOS SIFTERNARIO    {$$ = new IfTernario.default($3, $5, $7, @1.first_line, @1.first_column);}
+           |IF PAR1 EXPRESION PAR2 EXPRESION DOSPUNTOS SIFTERNARIO    {$$ = new IfTernario.default($3, $5, $7, @1.first_line, @1.first_column);}
+           |IF PAR1 EXPRESION PAR2 SIFTERNARIO DOSPUNTOS EXPRESION    {$$ = new IfTernario.default($3, $5, $7, @1.first_line, @1.first_column);}
 ;
 
 SWHILE : WHILE PAR1 EXPRESION PAR2 LLAVE1 INSTRUCCIONES LLAVE2  {$$ = new While.default($3, $6, @1.first_line, @1.first_column );}
@@ -254,7 +278,8 @@ SBREAK: BREAK {$$ = new Break.default(@1.first_line, @1.first_column );}
 SCONTINUE: CONTINUE {$$ = new Continue.default(@1.first_line, @1.first_column );}
 ;
 
-SRETURN: RETURN EXPRESION{$$ = new Return.default($2, @1.first_line, @1.first_column );}
+SRETURN: RETURN EXPRESION {$$ = new Return.default($2, @1.first_line, @1.first_column );}
+       | RETURN SIFTERNARIO  {$$ = new Return.default($2, @1.first_line, @1.first_column );}
 ;
 
 SRETURNSOLO: RETURN {$$ = new ReturnDefault.default(@1.first_line, @1.first_column );}
@@ -315,6 +340,14 @@ EXPRESION : MENOS EXPRESION %prec UMENOS {$$ = new Aritmeticas.default(Aritmetic
           | LLAMADA {$$=$1}
           | ID COR1 EXPRESION COR2    {$$ = new AccesoVector.default($1, $3,@1.first_line, @1.first_column);}
           | ID COR1 EXPRESION COR2 COR1 EXPRESION COR2    {$$ = new AccesoMatriz.default($1, $3, $6, @1.first_line, @1.first_column);}
+          | LOWER PAR1 EXPRESION PAR2  {$$ = new Lower.default($3, @1.first_line, @1.first_column);}
+          | UPPER PAR1 EXPRESION PAR2  {$$ = new Upper.default($3, @1.first_line, @1.first_column);}
+          | ROUND PAR1 EXPRESION PAR2  {$$ = new Round.default($3, @1.first_line, @1.first_column);}
+          | LEN PAR1 EXPRESION PAR2  {$$ = new Lenght.default($3, @1.first_line, @1.first_column);}
+          | TRUNCATE PAR1 EXPRESION PAR2  {$$ = new Truncate.default($3, @1.first_line, @1.first_column);}
+          | TOSTRING PAR1 EXPRESION PAR2  {$$ = new ToString.default($3, @1.first_line, @1.first_column);}
+          | TOCHARARRAY PAR1 EXPRESION PAR2  {$$ = new CharArray.default($3, @1.first_line, @1.first_column);}
+          | FUNCIONREVERSE {$$=$1}
 ;
 
 RELACIONALES: EXPRESION MENOR EXPRESION {$$ = new Relacionales.default(Relacionales.Relacional.MENOR, $1, $3, @1.first_line, @1.first_column );}

@@ -93,11 +93,11 @@ export default class Llamada extends Instruccion {
         if(busqueda instanceof Funcion){
             console.log("-----------------------------------------------------------------------------------------------------------")
             console.log("Si se evaluara la funcion enviada")
-            //crear nuevo entorno
+            
             let nuevoEntorno = new tablaSimbolo(arbol.getTablaGlobal())
             nuevoEntorno.setNombre("LLAMADA")
 
-            //declarando parametros con valor por defecto (exp, null)
+          
             for (let i = 0; i < busqueda.parametros.length; i++) {
                 let declaracionParametro = new Declaracion(busqueda.parametros[i].tipo,
                     this.linea, this.col, busqueda.parametros[i].id,
@@ -108,9 +108,8 @@ export default class Llamada extends Instruccion {
                 if (resultadoDeclaracion instanceof Errores) return resultadoDeclaracion
             }
 
-            // actualizar valor de los parametros parametros del run
+
             for (let i = 0; i < this.parametros.length; i++) {
-                //verificando existencia del parametro
                 let resultado = nuevoEntorno.getVariable(this.parametros[i].id)
                 console.log("Este es la variable a actualizar")
                 console.log(resultado)
@@ -118,34 +117,20 @@ export default class Llamada extends Instruccion {
                     return new Errores("SEMANTICO", "Parametro no existente",
                         this.linea, this.col)
                 }
-
-                // interpretar valor a asignar
-                /*
-                Esta es la diferencia respecto al RUN
-                El run unicamente tiene acceso a el entorno global, por eso
-                no hay problema para interpretar el valor del parametro con nuevoEntorno
-
-                Pero la llamada tiene acceso al entorno donde se llamo,
-                por eso debemos de interpretar con el entorno llamado tabla
-                */
                 console.log("Este es el valor que se manda por parametro para asignarlo en la variable y acutalizarlo antes de interpretar")
                 console.log(this.parametros[i].valor)
                 let resultadoValor = this.parametros[i].valor.interpretar(arbol, tabla);
                 console.log("Este es el valor que se manda por parametro para asignarlo en la variable y acutalizarlo")
                 console.log(resultadoValor)
                 if (resultadoValor instanceof Errores) return resultadoValor
-
-                // Tipo de parametro es igual a tipo nuevo valor?
                 if (resultado.getTipo().getTipo() != this.parametros[i].valor.tipoDato.getTipo()) {
                     return new Errores("SEMANTICO", "Tipo de parametro erroneo",
                         this.linea, this.col)
                 }
-
-                // asignar nuevo valor
                 resultado.setValor(resultadoValor)
             }
 
-            // validamos que ningun parametro tenga valor null
+            
             for (let i = 0; i < busqueda.parametros.length; i++) {
                 let resultado = nuevoEntorno.getVariable(busqueda.parametros[i].id)
                 if (resultado == null) {

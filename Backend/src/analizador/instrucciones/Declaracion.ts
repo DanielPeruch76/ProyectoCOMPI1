@@ -58,6 +58,8 @@ export default class Declaracion extends Instruccion {
         if(resValor instanceof Nativo){
             resValor=resValor.interpretar(arbol,tabla)
         }
+        console.log("Valor a declarar")
+        console.log(resValor)
         if (!tabla.setVariable(new Simbolo(this.tipoDato, this.identificador,this.mutabilidad,resValor))) {
             return new Errores('SEMANTICO', 'No se puede declarar la variable',
                 this.linea, this.col
